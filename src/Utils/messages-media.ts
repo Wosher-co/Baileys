@@ -346,6 +346,8 @@ type MediaDownloadOptions = {
 export const downloadContentFromMessage = async(
 	{ mediaKey, directPath, url }: DownloadableMessage,
 	type: MediaType,
+	cipherKey: Buffer,
+	iv: Buffer,
 	{ startByte, endByte }: MediaDownloadOptions = { }
 ) => {
 	const downloadUrl = url || `https://${DEF_HOST}${directPath}`
@@ -386,7 +388,6 @@ export const downloadContentFromMessage = async(
 	)
 
 	let remainingBytes = Buffer.from([])
-	const { cipherKey, iv } = getMediaKeys(mediaKey, type)
 
 	let aes: Crypto.Decipher
 
@@ -484,7 +485,9 @@ export async function decryptMediaMessageBuffer(message: WAMessageContent): Prom
 		messageContent = message[type]
 	}
 
-	return downloadContentFromMessage(messageContent, type.replace('Message', '') as MediaType)
+	const mediaType: MediaType = type.replace('Message', '') as MediaType
+	const { cipherKey, iv } = getMediaKeys(messageContent.mediaKey, mediaType)
+	return downloadContentFromMessage(messageContent, mediaType, cipherKey, iv)
 }
 
 export function extensionForMediaMessage(message: WAMessageContent) {
