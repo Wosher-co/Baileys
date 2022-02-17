@@ -343,6 +343,15 @@ type MediaDownloadOptions = {
     endByte?: number
 }
 
+export const downloadContentFromMessageWithoutKeys = async(
+	{ mediaKey, directPath, url }: DownloadableMessage,
+	type: MediaType,
+	{ startByte, endByte }: MediaDownloadOptions = { }
+) => {
+	const { cipherKey, iv } = getMediaKeys(mediaKey, type)
+	return downloadContentFromMessage({ mediaKey, directPath, url }, type, cipherKey, iv, { startByte, endByte })
+}
+
 export const downloadContentFromMessage = async(
 	{ mediaKey, directPath, url }: DownloadableMessage,
 	type: MediaType,

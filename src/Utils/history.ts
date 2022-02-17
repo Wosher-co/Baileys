@@ -2,12 +2,12 @@ import { promisify } from 'util'
 import { inflate } from 'zlib'
 import { proto } from '../../WAProto'
 import { Chat, Contact } from '../Types'
-import { downloadContentFromMessage } from './messages-media'
+import { downloadContentFromMessageWithoutKeys } from './messages-media'
 
 const inflatePromise = promisify(inflate)
 
 export const downloadHistory = async(msg: proto.IHistorySyncNotification) => {
-	const stream = await downloadContentFromMessage(msg, 'history')
+	const stream = await downloadContentFromMessageWithoutKeys(msg, 'history')
 	let buffer = Buffer.from([])
 	for await (const chunk of stream) {
 		buffer = Buffer.concat([buffer, chunk])

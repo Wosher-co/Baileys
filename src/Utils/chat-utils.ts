@@ -5,7 +5,7 @@ import { BinaryNode, getBinaryNodeChild, getBinaryNodeChildren } from '../WABina
 import { aesDecrypt, aesEncrypt, hkdf, hmacSign } from './crypto'
 import { toNumber } from './generics'
 import { LT_HASH_ANTI_TAMPERING } from './lt-hash'
-import { downloadContentFromMessage,  } from './messages-media'
+import { downloadContentFromMessageWithoutKeys } from './messages-media'
 
 type FetchAppStateSyncKey = (keyId: string) => Promise<proto.IAppStateSyncKeyData> | proto.IAppStateSyncKeyData
 
@@ -330,7 +330,7 @@ export const extractSyncdPatches = async(result: BinaryNode) => {
 
 
 export const downloadExternalBlob = async(blob: proto.IExternalBlobReference) => {
-	const stream = await downloadContentFromMessage(blob, 'md-app-state')
+	const stream = await downloadContentFromMessageWithoutKeys(blob, 'md-app-state')
 	let buffer = Buffer.from([])
 	for await (const chunk of stream) {
 		buffer = Buffer.concat([buffer, chunk])
